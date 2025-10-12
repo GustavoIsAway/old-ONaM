@@ -3,12 +3,12 @@ utils   = require("scripts.utils")
 CollBox = require("scripts.classes.CollisionBox")
 
 
-local Button = {}
-Button.__index = Button
+local CameraButton = {}
+CameraButton.__index = CameraButton
 
 
-function Button.new(x, y, scale, frames)  -- Espera >frames< como tabela
-  self = setmetatable({}, Button)
+function CameraButton.new(x, y, scale, frames)                  -- Espera >frames< como tabela
+  self = setmetatable({}, CameraButton)
   self.x, self.y = x or 0, y or 0
   self.scale = tonumber(scale) or 1
   self.currentFrame = nil
@@ -19,9 +19,9 @@ function Button.new(x, y, scale, frames)  -- Espera >frames< como tabela
   if (type(frames) == "table") then
     self.frames = frames
     self.currentFrame = 1
-    self.collisionBox = CollBox.new(self.x,               -- Pressupões frames de mesmo tamanho
+    self.collisionBox = CollBox.new(self.x,                     -- Pressupõe frames de mesmo tamanho
                                     self.y, 
-                                    frames[1]:getWidth(), 
+                                    frames[1]:getWidth(),
                                     frames[1].getHeight()
     )
     self.activateCollision = true
@@ -32,10 +32,14 @@ function Button.new(x, y, scale, frames)  -- Espera >frames< como tabela
 end
 
 
-function Button:update(mouseX, mouseY)
-  collided = collisionBox:checkMouseColl(mouseX, mouseY)
-  
+function CameraButton:update(mouseX, mouseY)
+  collided = self.collisionBox:checkMouseColl(mouseX, mouseY)
 end
 
 
-return Entity
+function CameraButton:returnSelectedCamera()
+
+end
+
+
+return CameraButton

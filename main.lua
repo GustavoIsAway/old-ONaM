@@ -5,6 +5,7 @@ local Timer = require("scripts.classes.Timer")
 local bit = require("bit")
 local CollBox = require("scripts.classes.CollisionBox")
 local Tablet = require("scripts.classes.Tablet")
+local TabletSystem = require("scripts.classes.TabletSystem")
 
 -- ESTRUTURAS DE DADOS
 local enumMov = {
@@ -48,10 +49,11 @@ Bck.speed = nil
 -- Dimensões da tela e da imagem
 local screenW, screenH = baseWidth, baseHeight
 local imgW, imgH = Bck.image:getWidth(), Bck.image:getHeight()
-local caixaDeColisao = CollBox.new(screenW / 2, screenH / 2, 100, 100)
-caixaDeColisao:disable()
 local painel = Tablet.new(screenW, screenH)
 local mouseCol = false
+local sistemaTablet = TabletSystem.new(screenW, screenH)
+
+
 
 
 -- FUNÇÃO DE REDIMENSIONAMENTO
@@ -62,6 +64,8 @@ function love.resize(w, h)
   offsetX = (w - baseWidth * currentScale) / 2
   offsetY = (h - baseHeight * currentScale) / 2
 end
+
+
 
 
 function love.update(dt)
@@ -83,20 +87,24 @@ function love.update(dt)
     touchingRight = false
   end
 
-  if touchingRight then
-    Bck.x = Bck.x - Bck.speed
-  elseif touchingLeft then
-    Bck.x = Bck.x + Bck.speed
+  if not painel:getTabletState() then
+    if touchingRight then
+      Bck.x = Bck.x - Bck.speed
+    elseif touchingLeft then
+      Bck.x = Bck.x + Bck.speed
+    end
   end
 
   -- Limita a posição da imagem para não sair da tela
   if Bck.x > 0 then Bck.x = 0 end                            -- lado direito da imagem
   if Bck.x < screenW - imgW then Bck.x = screenW - imgW end  -- lado esquerdo
 
-  mouseCol = caixaDeColisao:checkMouseColl(mousePos[1], mousePos[2])
   painel:update(dt, mousePos[1], mousePos[2])
+  sistemaTablet:update(dt, painel:getTabletState())
   generalTimer:update(dt)
 end
+
+
 
 
 function love.keypressed(key)
@@ -104,6 +112,8 @@ function love.keypressed(key)
     toggleDebugInfo = bit.bxor(toggleDebugInfo, 1)
   end
 end
+
+
 
 
 function love.draw()
@@ -121,15 +131,16 @@ function love.draw()
 end
 
 
+
+
 function drawGameWorld()
   -- CENÁRIO
   if (not painel:getTabletState()) then
     love.graphics.draw(Bck.image, Bck.x, Bck.y)
   end
+  
   painel:draw()
-
-  -- FORMAS GEOMÉTRICAS
-  caixaDeColisao:draw()
+  sistemaTablet:draw()
 
   -- INFOS DE DEBUG
   love.graphics.setColor(1, 1, 1, 1)
@@ -145,6 +156,8 @@ function drawGameWorld()
     love.graphics.print("mouseCol: " .. tostring(mouseCol), 0, 96)
   end
 end
+
+
 
 
 -- FUNÇÃO DE LETTERBOX (barras pretas)

@@ -11,8 +11,18 @@ end
 
 function Timer:set(value)
   self.count = value
-  self.jammed = false
+  if self.count < self.waitTime then
+    self.jammed = false
+  else
+    self.jammed = true
+  end
 end
+
+
+function Timer:reset()
+  Timer:set(0)
+end
+
 
 function Timer:get()
   return self.count
