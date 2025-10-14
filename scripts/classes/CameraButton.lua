@@ -19,10 +19,11 @@ function CameraButton.new(x, y, scale, frames)                  -- Espera >frame
   if (type(frames) == "table") then
     self.frames = frames
     self.currentFrame = 1
-    self.collisionBox = CollBox.new(self.x,                     -- Pressupõe frames de mesmo tamanho
-                                    self.y, 
-                                    frames[1]:getWidth(),
-                                    frames[1].getHeight()
+    self.collisionBox = CollBox.new(
+      self.x,                                                   -- Pressupõe frames de mesmo tamanho
+      self.y, 
+      frames[1]:getWidth(),
+      frames[1].getHeight()
     )
     self.activateCollision = true
   end

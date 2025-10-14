@@ -10,4 +10,3 @@
 === HEURÍSTICA ===
 - Câmera
 	* Painel e botão estão na mesma classe.
-	* Câmera sempre é 4:3. Ela sempre entrará num modo 4:3.

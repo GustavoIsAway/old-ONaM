@@ -5,6 +5,7 @@ local CollBox = {}
 CollBox.__index = CollBox
 
 
+
 function CollBox.new(x, y, wid, hei)
 	local self = setmetatable({}, CollBox)
 	self.type = type
@@ -66,21 +67,26 @@ end
 
 
 function CollBox:draw(alpha)		-- >color< Recebe tabela
-	love.graphics.setColor(self.color[1], 
-												 self.color[2], 
-												 self.color[3], 
-												 alpha or 0.5
-)
-	love.graphics.rectangle("fill", 
-													self.x, 
-													self.y, 
-													self.width, 
-													self.height, 
-													nil, 
-													nil, 
-													0
-)
+ 	love.graphics.push("all")
+	love.graphics.setColor(
+		self.color[1], 
+		self.color[2], 
+	 	self.color[3], 
+	  alpha or 0.5
+	)
+	love.graphics.rectangle(
+		"fill", 
+	  self.x, 
+		self.y, 
+		self.width, 
+		self.height, 
+		nil, 
+		nil, 
+		0
+	)
+	love.graphics.pop()
 end
+
 
 
 return CollBox
