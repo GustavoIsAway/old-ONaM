@@ -1,16 +1,19 @@
+math.randomseed(os.time())
+math.random(); math.random(); math.random()
+
 local utils = require("scripts.utils")
 local Timer = require("scripts.classes.Timer")
 local bit = require("bit")
 local CollBox = require("scripts.classes.CollisionBox")
-local Tablet = require("scripts.classes.Tablet")
 local TabletSystem = require("scripts.classes.TabletSystem")
+local EyeEnemy = require("scripts.classes.enemies.EyeEnemy")
+local Tablet = require("scripts.classes.Tablet")
 
 -- ESCALA E POSICIONAMENTO
-local baseWidth, baseHeight = 800,600
+local baseWidth, baseHeight = 800, 600
 local currentScale = 1
 local offsetX, offsetY = 0,0
 local hDivision = 6
-local deltaTime = nil
 
 -- BACKGROUND
 local Bck = {image = utils.loadImage("Sala.jpg"), x = 0, y = -90, speed = 0}
@@ -21,14 +24,19 @@ local sistemaTablet = TabletSystem.new(baseWidth, baseHeight)
 
 -- MOUSE
 local mousePos = {}
-local mousePressed = false
 
 -- CANVAS
 local renderCanvas
 
 -- DEBUG
 local showDebug = true
-local generalTimer = Timer.new(100)
+local generalTimer = Timer.new(nil)
+local mode = nil
+local playerCamera = nil
+local jeffKill
+
+-- INIMIGOS
+jeffWarzatski = EyeEnemy.new(0, 0, 10)
 
 
 
@@ -52,9 +60,8 @@ end
 
 
 function love.update(dt)
-  deltaTime = dt
   generalTimer:update(dt)
-  mousePressed = love.mouse.isDown(1)
+  playerCamera, mode = sistemaTablet:getCamera()
   mousePos[1] = (love.mouse.getX() - offsetX)/currentScale
   mousePos[2] = (love.mouse.getY() - offsetY)/currentScale
 
@@ -72,6 +79,7 @@ function love.update(dt)
 
   painel:update(dt, mousePos[1], mousePos[2])
   sistemaTablet:update(dt, mousePos[1], mousePos[2], painel.isOn)
+  jeffKill = jeffWarzatski:update(dt, playerCamera, painel.isOn)
 end
 
 
@@ -94,6 +102,7 @@ function love.draw()
   love.graphics.draw(Bck.image, Bck.x, Bck.y)
 
   sistemaTablet:draw()
+  jeffWarzatski:draw(mode)
   painel:draw()
 
   love.graphics.setCanvas()
@@ -120,6 +129,9 @@ function drawDebug()
     y = y + 12
   end
 
+  local cameraGets = {}
+  cameraGets[1], cameraGets[2] = sistemaTablet:getCamera()
+
   dbg("FPS: " .. love.timer.getFPS())
   dbg("Timer: " .. string.format("%.2f", generalTimer:get()))
   dbg("Mouse (raw): " .. love.mouse.getX() .. ", " .. love.mouse.getY())
@@ -131,5 +143,5 @@ function drawDebug()
   dbg("Background: " .. math.floor(Bck.x) .. ", " .. math.floor(Bck.y))
   dbg("Tablet ativo: " .. tostring(painel.isOn))
   dbg("Q: alterna debug info")
-  dbg("Dt: " .. (deltaTime or 0))
+  dbg("Current Camera/Mode: " .. cameraGets[1] .. ", " ..cameraGets[2])
 end

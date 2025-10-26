@@ -7,6 +7,8 @@ function Timer.new(waitTime)
   self.count = 0
   self.jammed = false
   self.isPaused = false
+  self.valid = nil
+  if type(self.waitTime) == "number" or self.waitTime == nil then self.valid = true else self.valid = false end
   return self
 end
 
@@ -23,6 +25,18 @@ end
 
 
 
+function Timer:changeWaitTimer(value)
+  if type(value) == "number" or value == nil then
+    self.valid = true
+  else
+    self.valid = false
+  end
+  self.waitTime = value
+
+end
+
+
+
 function Timer:get()
   return self.count
 end
@@ -30,14 +44,26 @@ end
 
 
 function Timer:update(dt)
-  if not self.isPaused then
-    if not self.jammed then
-      self.count = self.count + dt
+  if not self.isPaused and not self.jammed and self.valid then
+    self.count = self.count + dt
+    if self.waitTime ~= nil then
       if self.count >= self.waitTime then
         self.jammed = true
       end
     end
   end
+end
+
+
+
+function Timer:pause()
+  self.isPaused = true
+end
+
+
+
+function Timer:unpause()
+  self.isPaused = false
 end
 
 
