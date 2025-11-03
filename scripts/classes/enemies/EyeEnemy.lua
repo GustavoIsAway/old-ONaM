@@ -19,7 +19,6 @@ function EyeEnemy.new(x, y, difficulty)
   self.attackTimer =              Timer.new(12 - (difficulty/4))     -- Tempo para permanecer no estado de ataque, antes de entrar no kill state
   self.killTimer   =              Timer.new(5)                       -- Tempo para esperar antes de realmente atacar o protagonista
   self.watchTimer  =              Timer.new(3 + (difficulty/6.5))
-  self.spawnChance =              0.1 + (0.04 * difficulty)
 
   self.state = 0                            -- 0 = inativo; 1 = nas câmeras; 2 = killstate
   self.camera = 0                           -- Camera 0 inicialmente, que não existe
@@ -32,7 +31,8 @@ function EyeEnemy.new(x, y, difficulty)
     "enemies/jeff_warzatski/stillImage.png"
   )
   self.frames.jumpscare  = {}               -- Frames do jumpscare
-  self.isCameraOn = false
+  self.isOnCamera = false
+  self.currentCamera = nil
 
   return self
 end
@@ -59,7 +59,8 @@ function EyeEnemy:update(dt, playerCamera, isOn)
     return
   end
 
-  self.isCameraOn = (playerCamera == self.camera) and isOn
+  self.isOnCamera = (playerCamera[1] == self.camera) and isOn
+  self.currentCamera = playerCamera
 
   -- ?? Mecânica de sorteio para aparecer nas cameras
   if self.state == 0 then
@@ -80,7 +81,7 @@ function EyeEnemy:update(dt, playerCamera, isOn)
   -- ?? Mecânica do tempo de espera nas cameras
   if self.state == 1 then
     if not self.attackTimer:getJammed()then
-      if not self.isCameraOn then
+      if not self.isOnCamera then
         self.attackTimer:update(dt)
         self.visible = false
       else
@@ -118,12 +119,12 @@ end
 
 
 
-function EyeEnemy:draw(mode)
+function EyeEnemy:draw()
   if self.difficulty == 0 then
     return
   end
 
-  if self.visible == true and mode == 0 and self.isCameraOn and self.camera > 0 then
+  if self.visible == true and self.currentCamera[2] == 0 and self.isOnCamera and self.camera > 0 then
     love.graphics.draw(self.frames.inCameras, self.x, self.y)
   end
 end

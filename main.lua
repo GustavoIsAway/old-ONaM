@@ -1,13 +1,12 @@
 math.randomseed(os.time())
 math.random(); math.random(); math.random()
 
-local utils = require("scripts.utils")
-local Timer = require("scripts.classes.Timer")
-local bit = require("bit")
-local CollBox = require("scripts.classes.CollisionBox")
+local utils        = require("scripts.utils")
+local Timer        = require("scripts.classes.Timer")
 local TabletSystem = require("scripts.classes.TabletSystem")
-local EyeEnemy = require("scripts.classes.enemies.EyeEnemy")
-local Tablet = require("scripts.classes.Tablet")
+local EyeEnemy     = require("scripts.classes.enemies.EyeEnemy")
+local Tablet       = require("scripts.classes.Tablet")
+local Snake        = require("scripts.classes.enemies.Snake")
 
 -- ESCALA E POSICIONAMENTO
 local baseWidth, baseHeight = 800, 600
@@ -37,6 +36,7 @@ local jeffKill
 
 -- INIMIGOS
 jeffWarzatski = EyeEnemy.new(0, 0, 10)
+lenny         = Snake.new(0, 0, 20)
 
 
 
@@ -79,7 +79,8 @@ function love.update(dt)
 
   painel:update(dt, mousePos[1], mousePos[2])
   sistemaTablet:update(dt, mousePos[1], mousePos[2], painel.isOn)
-  jeffKill = jeffWarzatski:update(dt, playerCamera, painel.isOn)
+  jeffKill = jeffWarzatski:update(dt, {playerCamera, mode}, painel.isOn)
+  lennyKill = lenny:update(dt, {playerCamera, mode}, painel.isOn)
 end
 
 
@@ -101,15 +102,24 @@ function love.draw()
   -- background
   love.graphics.draw(Bck.image, Bck.x, Bck.y)
 
+  -- Robôs do Escritório
+
+  -- Fim dos Robôs do Escritório
+
   sistemaTablet:draw()
-  jeffWarzatski:draw(mode)
+
+  -- Robôs das câmeras
+  lenny:draw()
+  jeffWarzatski:draw()
+  -- Fim dos robôs das câmeras
+
   painel:draw()
 
   love.graphics.setCanvas()
   love.graphics.push()
   love.graphics.translate(offsetX, offsetY)
   love.graphics.scale(currentScale, currentScale)
-  love.graphics.draw(renderCanvas,0,0)
+  love.graphics.draw(renderCanvas, 0, 0)
   love.graphics.pop()
 
   -- debug info

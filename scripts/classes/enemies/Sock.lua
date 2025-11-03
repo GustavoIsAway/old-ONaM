@@ -1,14 +1,14 @@
 local Timer = require("scripts.classes.Timer")
 local utils = require("scripts.utils")
 
-local EyeEnemy = {}
-EyeEnemy.__index = EyeEnemy
+local Sock = {}
+Sock.__index = Sock
 
 
 
 
-function EyeEnemy.new(x, y, difficulty)
-  local self = setmetatable({}, EyeEnemy)
+function Sock.new(x, y, difficulty)
+  local self = setmetatable({}, Sock)
   self.x, self.y = x, y                     -- Posição
 
   self.difficulty = difficulty              -- Dificuldade: um número de 0 a 20
@@ -19,16 +19,16 @@ function EyeEnemy.new(x, y, difficulty)
   self.attackTimer =              Timer.new(12 - (difficulty/4))     -- Tempo para permanecer no estado de ataque, antes de entrar no kill state
   self.killTimer   =              Timer.new(5)                       -- Tempo para esperar antes de realmente atacar o protagonista
   self.watchTimer  =              Timer.new(3 + (difficulty/6.5))
-  self.spawnChance =              0.1 + (0.04 * difficulty)
 
-  self.state = 0                            -- 0 = inativo; 1 = nas câmeras; 2 = killstate
-  self.camera = 0                           -- Camera 0 inicialmente, que não existe
+  self.state = 0                                 -- 0 = inativo; 1 = nas câmeras; 2 = killstate
+  self.camera = {2, 0}                           -- Camera 2, modo 0 (laboratório de máquinas)
+  self.stage = 1
   self.numberOfCameras = 3
   self.visible = false
   self.killPlayer = false
 
   self.frames           = {}                -- Objeto: não deve receber valores pelos seus índicies
-  self.frames.inCameras = utils.loadImage(  -- Sprite do Jeff nas câmeras
+  self.frames.inCameras = utils.loadImage(
     "enemies/jeff_warzatski/stillImage.png"
   )
   self.frames.jumpscare  = {}               -- Frames do jumpscare
@@ -40,7 +40,7 @@ end
 
 
 
-function EyeEnemy:isGonnaMove(min, max)               -- Retorna verdade sempre que sorteio <= dificuldade
+function Sock:isGonnaMove(min, max)               -- Retorna verdade sempre que sorteio <= dificuldade
   local sorted = math.random(min, max)
 
   if sorted <= self.difficulty then
@@ -54,7 +54,7 @@ end
 
 
 
-function EyeEnemy:update(dt, playerCamera, isOn)
+function Sock:update(dt, playerCamera, isOn)
   if self.difficulty == 0 then
     return
   end
@@ -118,7 +118,7 @@ end
 
 
 
-function EyeEnemy:draw(mode)
+function Sock:draw(mode)
   if self.difficulty == 0 then
     return
   end
@@ -131,4 +131,4 @@ end
 
 
 
-return EyeEnemy
+return Sock
