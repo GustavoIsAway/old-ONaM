@@ -1,12 +1,12 @@
 math.randomseed(os.time())
 math.random(); math.random(); math.random()
 
-local utils        = require("scripts.utils")
-local Timer        = require("scripts.classes.Timer")
-local TabletSystem = require("scripts.classes.TabletSystem")
-local EyeEnemy     = require("scripts.classes.enemies.EyeEnemy")
-local Tablet       = require("scripts.classes.Tablet")
-local Snake        = require("scripts.classes.enemies.Snake")
+local utils         = require("scripts.utils")
+local Timer         = require("scripts.classes.Timer")
+local TabletSystem  = require("scripts.classes.TabletSystem")
+local EyeEnemy      = require("scripts.classes.enemies.EyeEnemy")
+local Tablet        = require("scripts.classes.Tablet")
+local Snake         = require("scripts.classes.enemies.Snake")
 
 -- ESCALA E POSICIONAMENTO
 local baseWidth, baseHeight = 800, 600
@@ -80,7 +80,7 @@ function love.update(dt)
   painel:update(dt, mousePos[1], mousePos[2])
   sistemaTablet:update(dt, mousePos[1], mousePos[2], painel.isOn)
   jeffKill = jeffWarzatski:update(dt, {playerCamera, mode}, painel.isOn)
-  lennyKill = lenny:update(dt, {playerCamera, mode}, painel.isOn)
+  lennyKill = lenny:update(dt, {playerCamera, mode}, painel.isOn, sistemaTablet:getLockedDuct())
 end
 
 
@@ -154,4 +154,5 @@ function drawDebug()
   dbg("Tablet ativo: " .. tostring(painel.isOn))
   dbg("Q: alterna debug info")
   dbg("Current Camera/Mode: " .. cameraGets[1] .. ", " ..cameraGets[2])
+  dbg("Duto trancado: " .. sistemaTablet:getLockedDuct()[1] .. ", " .. sistemaTablet:getLockedDuct()[2])
 end

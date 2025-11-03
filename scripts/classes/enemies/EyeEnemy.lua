@@ -33,6 +33,7 @@ function EyeEnemy.new(x, y, difficulty)
   self.frames.jumpscare  = {}               -- Frames do jumpscare
   self.isOnCamera = false
   self.currentCamera = nil
+  self.drawCurrentSprite = nil
 
   return self
 end
@@ -55,32 +56,38 @@ end
 
 
 function EyeEnemy:update(dt, playerCamera, isOn)
-  if self.difficulty == 0 then
-    return
-  end
+  if self.difficulty == 0 then return end
 
   self.isOnCamera = (playerCamera[1] == self.camera) and isOn
   self.currentCamera = playerCamera
 
-  -- ?? Mecânica de sorteio para aparecer nas cameras
+  -- Estados
   if self.state == 0 then
     if not self.movementOpportunityTimer:getJammed() then
       self.movementOpportunityTimer:update(dt)
     else
-      local moving = self:isGonnaMove(1, 20)
-      if moving == true then
-        self.state = 1
-        self.camera = math.random(1, self.numberOfCameras)
-        self.attackTimer:set(0)
-        self.watchTimer:set(0)
+      if self:isGonnaMove(1, 20) then
+        -- salva os valores mas não aplica ainda
+        self.nextState  = 1
+        self.nextCamera = math.random(1, self.numberOfCameras)
+        self.pendingMove = true
       end
       self.movementOpportunityTimer:set(0)
     end
   end
 
-  -- ?? Mecânica do tempo de espera nas cameras
+  -- Aplica a troca só quando ele não está sendo visto
+  if self.pendingMove and not self.isOnCamera then
+    self.state  = self.nextState
+    self.camera = self.nextCamera
+    self.attackTimer:set(0)
+    self.watchTimer:set(0)
+    self.pendingMove = false
+  end
+
+  -- Mecânica de tempo nas câmeras
   if self.state == 1 then
-    if not self.attackTimer:getJammed()then
+    if not self.attackTimer:getJammed() then
       if not self.isOnCamera then
         self.attackTimer:update(dt)
         self.visible = false
@@ -88,6 +95,7 @@ function EyeEnemy:update(dt, playerCamera, isOn)
         if not self.watchTimer:getJammed() then
           self.watchTimer:update(dt)
         else
+          -- Sai da câmera
           self.state = 0
           self.camera = 0
           self.movementOpportunityTimer:set(0)
@@ -101,8 +109,16 @@ function EyeEnemy:update(dt, playerCamera, isOn)
     end
   end
 
+  -- Atualiza função de desenho
+  if self.visible and self.currentCamera[2] == 0 and self.isOnCamera and self.camera > 0 then
+    self.drawCurrentSprite = function()
+      love.graphics.draw(self.frames.inCameras, self.x, self.y)
+    end
+  else
+    self.drawCurrentSprite = function() end
+  end
 
-  -- ?? Mecânica de kill
+  -- Kill
   if self.state == 2 then
     if not self.killTimer:getJammed() then
       self.killTimer:update(dt)
@@ -112,9 +128,8 @@ function EyeEnemy:update(dt, playerCamera, isOn)
   end
 
   return self.killPlayer
-
-
 end
+
 
 
 
@@ -124,9 +139,8 @@ function EyeEnemy:draw()
     return
   end
 
-  if self.visible == true and self.currentCamera[2] == 0 and self.isOnCamera and self.camera > 0 then
-    love.graphics.draw(self.frames.inCameras, self.x, self.y)
-  end
+  self.drawCurrentSprite()
+  
 end
 
 

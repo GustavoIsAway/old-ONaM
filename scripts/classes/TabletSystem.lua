@@ -19,6 +19,7 @@ function TabletSystem.new(screenW, screenH)
   self.mode = 0                                  -- 0 -> Normal; 1 -> Dutos;
   self.cameraProgressParts = 40
   self.stateOfTablet = false                     -- Diz se o tablet está ligado ou desligado
+  self.lockedDuct = {0, 1}
 
   -- == Câmeras ==
   self.mainCameraImages = {
@@ -50,6 +51,18 @@ function TabletSystem.new(screenW, screenH)
 
     Button.new(screenW - 120, 100, "uiButtonMode.png", function()
       self.mode = bit.bxor(self.mode, 1)
+    end),
+
+    Button.new(screenW - 120, 180, "uiButtonLock.png", function()
+      if self.mode == 1 then
+        if self.ductsActiveCamera ~= 1 then
+          if self.lockedDuct[1] ~= self.ductsActiveCamera then
+            self.lockedDuct = {self.ductsActiveCamera, 1}
+          else
+            self.lockedDuct = {0, 1}
+          end
+        end
+      end
     end)
   }
 
@@ -72,10 +85,11 @@ end
 
 function TabletSystem:update(dt, mouseX, mouseY, stateOfTablet)
   self.stateOfTablet = stateOfTablet
-  incrementParcel = dt * 1.8;
+  incrementParcel = dt * 1.6;
+
 
   self.recordTimer:update(dt)
-  
+
   if self.stateOfTablet then
     if self.mode == 0 then
       self.mainCameraProgressInterval:update(dt)
@@ -140,6 +154,12 @@ function TabletSystem:getCamera()
   else
     return self.ductsActiveCamera, self.mode
   end
+end
+
+
+
+function TabletSystem:getLockedDuct()
+  return self.lockedDuct
 end
 
 

@@ -9,19 +9,19 @@ Snake.__index = Snake
 
 function Snake.new(x, y, difficulty)
   local self = setmetatable({}, Snake)
-  self.x, self.y = x, y                                               -- Posição
+  self.x, self.y = x, y                                                      -- Posição
 
-  self.difficulty = difficulty                                        -- Dificuldade: um número de 0 a 20
+  self.difficulty = difficulty                                               -- Dificuldade: um número de 0 a 20
 
   -- TODO: balancear os valores dos timers
   -- self.movementOpportunityTimer = Timer.new(20 - (difficulty/1.4))
   self.movementOpportunityTimer = Timer.new(5)
-  self.killTimer   =              Timer.new(10)                       -- Tempo para esperar antes de realmente atacar o protagonista
+  self.killTimer   =              Timer.new(10)                              -- Tempo para esperar antes de realmente atacar o protagonista
 
-  self.state = 1                                                      -- 1 - 2 = neutro; 3 - esperando; 4 - 6 = posições de ataque; 7 = killstate
+  self.state = 1                                                             -- 1 - 2 = neutro; 3 - esperando; 4 - 6 = posições de ataque; 7 = killstate
   self.cameras = {
     {2, 0},
-    {0, 0},                                                           -- Sem câmeras quando ele some do laboratório
+    {0, 0},                                                                  -- Sem câmeras quando ele some do laboratório
     {1, 1},
     {4, 1},
     {2, 1},
@@ -32,20 +32,22 @@ function Snake.new(x, y, difficulty)
   self.numberOfCameras = #self.cameras
   self.visible = false
   self.killPlayer = false
-  self.blocked = false
+  self.blocked = true
+  self.isOnCamera = false
+  self.currentCamera = {0, 0}
 
-  self.frames           = {}                                          -- Objeto: não deve receber valores pelos seus índices
+
+  self.frames           = {}                                               -- Objeto: não deve receber valores pelos seus índices
   self.frames.inCameras = {
-    nil,                                                              -- Imagem do Lenny no laboratório de máquinas
-    nil,                                                              -- Sprite vazio: Lenny entra nos dutos, mas não aparece
+    nil,                                                                   -- Imagem do Lenny no laboratório de máquinas
+    nil,                                                                   -- Sprite vazio: Lenny entra nos dutos, mas não aparece
     utils.loadImage("enemies/lenny/drz_center.png"),
     utils.loadImage("enemies/lenny/drz_front.png"),
-    utils.loadImage("enemies/lenny/drz_side.png"),                    -- Sprite do lado direito
-    utils.loadImage("enemies/lenny/drz_side.png")                     -- Sprite do lado esquerdo
+    utils.loadImage("enemies/lenny/drz_side_right.png"),                   -- Sprite do lado direito
+    utils.loadImage("enemies/lenny/drz_side_left.png")                     -- Sprite do lado esquerdo
   }
-  self.frames.jumpscare = {}                                          -- Frames do jumpscare
-  
-  self.isOnCamera = false
+  self.frames.jumpscare = {}                                               -- Frames do jumpscare
+
 
   return self
 end
@@ -67,14 +69,15 @@ end
 
 
 
-function Snake:update(dt, playerCamera, isOn)                        -- playerCamera aqui é a câmera e o modo
+function Snake:update(dt, playerCamera, isOn, lockedDuct)                        -- playerCamera aqui é a câmera e o modo
   if self.difficulty == 0 then
     return
   end
 
-
   self.isOnCamera = (playerCamera[1] == self.cameras[self.state][1] and playerCamera[2] == self.cameras[self.state][2]) and isOn
-  self.currentCamera = playerCamera
+  self.currentCamera = self.cameras[self.state]
+  self.currentSprite = self.frames.inCameras[self.state]
+  self.blocked = self.currentCamera[1] == lockedDuct[1] and self.currentCamera[2] == 1
 
   if self.state ~= 7 then
     if not self.movementOpportunityTimer:getJammed() then
@@ -115,11 +118,9 @@ function Snake:draw()
     return
   end
 
-  if self.frames.inCameras[self.state] ~= nil and self.isOnCamera and self.state ~= 7 then
-    love.graphics.draw(self.frames.inCameras[self.state], self.x, self.y)
+  if self.isOnCamera and self.state ~= 7 and self.frames.inCameras[self.state] ~= nil then
+    love.graphics.draw(self.currentSprite, self.x, self.y)
   end
-
-  print(self.state)
   
 end
 
