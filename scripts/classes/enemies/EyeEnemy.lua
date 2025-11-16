@@ -14,11 +14,10 @@ function EyeEnemy.new(x, y, difficulty)
   self.difficulty = difficulty              -- Dificuldade: um número de 0 a 20
 
   -- TODO: balancear os valores dos timers
-  -- self.movementOpportunityTimer = Timer.new(20 - (difficulty/1.4))
-  self.movementOpportunityTimer = Timer.new(5)
+  self.movementOpportunityTimer = Timer.new(8)
   self.attackTimer =              Timer.new(12 - (difficulty/4))     -- Tempo para permanecer no estado de ataque, antes de entrar no kill state
   self.killTimer   =              Timer.new(5)                       -- Tempo para esperar antes de realmente atacar o protagonista
-  self.watchTimer  =              Timer.new(3 + (difficulty/6.5))
+  self.watchTimer  =              Timer.new(2 + (difficulty/12))
 
   self.state = 0                            -- 0 = inativo; 1 = nas câmeras; 2 = killstate
   self.camera = 0                           -- Camera 0 inicialmente, que não existe
@@ -63,7 +62,7 @@ function EyeEnemy:update(dt, playerCamera, isOn)
 
   -- Estados
   if self.state == 0 then
-    if not self.movementOpportunityTimer:getJammed() then
+    if not self.movementOpportunityTimer:isJammed() then
       self.movementOpportunityTimer:update(dt)
     else
       if self:isGonnaMove(1, 20) then
@@ -87,12 +86,12 @@ function EyeEnemy:update(dt, playerCamera, isOn)
 
   -- Mecânica de tempo nas câmeras
   if self.state == 1 then
-    if not self.attackTimer:getJammed() then
+    if not self.attackTimer:isJammed() then
       if not self.isOnCamera then
         self.attackTimer:update(dt)
         self.visible = false
       else
-        if not self.watchTimer:getJammed() then
+        if not self.watchTimer:isJammed() then
           self.watchTimer:update(dt)
         else
           -- Sai da câmera
@@ -120,7 +119,7 @@ function EyeEnemy:update(dt, playerCamera, isOn)
 
   -- Kill
   if self.state == 2 then
-    if not self.killTimer:getJammed() then
+    if not self.killTimer:isJammed() then
       self.killTimer:update(dt)
     else
       self.killPlayer = true

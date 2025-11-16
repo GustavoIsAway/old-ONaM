@@ -1,22 +1,31 @@
 local Timer = {}
 Timer.__index = Timer
 
-function Timer.new(waitTime)
+function Timer.new(timeLimit)
   local self = setmetatable({}, Timer)
-  self.waitTime = waitTime
+  
+  self.maxTime = timeLimit
   self.count = 0
   self.jammed = false
   self.isPaused = false
   self.valid = nil
-  if type(self.waitTime) == "number" or self.waitTime == nil then self.valid = true else self.valid = false end
+  self.timeMultiplier = 1
+  if type(self.maxTime) == "number" or self.maxTime == nil then self.valid = true else self.valid = false end
+
   return self
+end
+
+
+
+function Timer:setMultiplier(val)
+  self.timeMultiplier = val
 end
 
 
 
 function Timer:set(value)
   self.count = value
-  if self.count < self.waitTime then
+  if self.count < self.maxTime then
     self.jammed = false
   else
     self.jammed = true
@@ -25,13 +34,13 @@ end
 
 
 
-function Timer:changeWaitTimer(value)
+function Timer:setMaxTime(value)
   if type(value) == "number" or value == nil then
     self.valid = true
   else
     self.valid = false
   end
-  self.waitTime = value
+  self.maxTime = value
 
 end
 
@@ -45,25 +54,13 @@ end
 
 function Timer:update(dt)
   if not self.isPaused and not self.jammed and self.valid then
-    self.count = self.count + dt
-    if self.waitTime ~= nil then
-      if self.count >= self.waitTime then
+    self.count = self.count + (dt * self.timeMultiplier)
+    if self.maxTime ~= nil then
+      if self.count >= self.maxTime then
         self.jammed = true
       end
     end
   end
-end
-
-
-
-function Timer:pause()
-  self.isPaused = true
-end
-
-
-
-function Timer:unpause()
-  self.isPaused = false
 end
 
 
@@ -75,7 +72,7 @@ end
 
 
 
-function Timer:getJammed()
+function Timer:isJammed()
   return self.jammed
 end
 

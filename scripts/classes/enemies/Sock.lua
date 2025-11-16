@@ -9,30 +9,35 @@ Sock.__index = Sock
 
 function Sock.new(x, y, difficulty)
   local self = setmetatable({}, Sock)
-  self.x, self.y = x, y                     -- Posição
+  self.x, self.y = x, y                                           -- Posição
 
-  self.difficulty = difficulty              -- Dificuldade: um número de 0 a 20
+  self.difficulty = difficulty                                    -- Dificuldade: um número de 0 a 20
 
   -- TODO: balancear os valores dos timers
-  -- self.movementOpportunityTimer = Timer.new(20 - (difficulty/1.4))
-  self.movementOpportunityTimer = Timer.new(5)
-  self.attackTimer =              Timer.new(12 - (difficulty/4))     -- Tempo para permanecer no estado de ataque, antes de entrar no kill state
-  self.killTimer   =              Timer.new(5)                       -- Tempo para esperar antes de realmente atacar o protagonista
-  self.watchTimer  =              Timer.new(3 + (difficulty/6.5))
+  self.movementTimer            = Timer.new(35)
+  self.killTimer                = Timer.new(10)                   -- Tempo para esperar antes de realmente atacar o protagonista
 
-  self.state = 0                                 -- 0 = inativo; 1 = nas câmeras; 2 = killstate
-  self.camera = {2, 0}                           -- Camera 2, modo 0 (laboratório de máquinas)
-  self.stage = 1
-  self.numberOfCameras = 3
-  self.visible = false
+  self.state = 1                                                  -- 1 - Esperando; 2 - Ativo (fora da primeira câmera); 3-5 Na sala; 6 - Killstate; 
+  self.cameras = {1, 2, 3, 4, 5}                                  -- Câmeras nas quais ele pode estar
+
+  self.numberOfCameras = #self.cameras
+  self.isVisible = true
   self.killPlayer = false
+  self.isOnCamera = false
+  self.currentCamera = {0, 0}
 
-  self.frames           = {}                -- Objeto: não deve receber valores pelos seus índicies
-  self.frames.inCameras = utils.loadImage(
-    "enemies/jeff_warzatski/stillImage.png"
-  )
-  self.frames.jumpscare  = {}               -- Frames do jumpscare
-  self.isCameraOn = false
+
+
+  self.frames           = {}                                      -- Objeto: não deve receber valores pelos seus índices
+  self.frames.inCameras = {
+    "f1",
+    "f2",
+    "f3",
+    "f4",
+    "f5"
+  }
+  self.frames.jumpscare = {nil}                                   -- Frames do jumpscare
+
 
   return self
 end
@@ -40,7 +45,7 @@ end
 
 
 
-function Sock:isGonnaMove(min, max)               -- Retorna verdade sempre que sorteio <= dificuldade
+function Sock:isGonnaMove(min, max)
   local sorted = math.random(min, max)
 
   if sorted <= self.difficulty then
@@ -54,78 +59,59 @@ end
 
 
 
-function Sock:update(dt, playerCamera, isOn)
+function Sock:update(dt, playerCamera, isOn)                      -- playerCamera aqui é a câmera e o modo
   if self.difficulty == 0 then
     return
   end
+  
+  self.isOnCamera = (playerCamera[1] == self.cameras[self.state][1] and playerCamera[2] == self.cameras[self.state][2]) and isOn
+  self.currentCamera = self.cameras[self.state]
+  self.currentSprite = self.frames.inCameras[self.state]
+  
 
-  self.isCameraOn = (playerCamera == self.camera) and isOn
-
-  -- ?? Mecânica de sorteio para aparecer nas cameras
-  if self.state == 0 then
-    if not self.movementOpportunityTimer:getJammed() then
-      self.movementOpportunityTimer:update(dt)
+  -- Comportamento do timer dependendo se o jogador está com a tela na câmera
+  if playerCamera[1] == self.cameras[self.state][1] and playerCamera[2] == self.cameras[self.state][2] then
+    if isOn then
+      self.movementOpportunityTimer:setMultiplier(0)
     else
-      local moving = self:isGonnaMove(1, 20)
-      if moving == true then
-        self.state = 1
-        self.camera = math.random(1, self.numberOfCameras)
-        self.attackTimer:set(0)
-        self.watchTimer:set(0)
-      end
+      self.movementOpportunityTimer:setMultiplier(0.4)
+    end
+  else
+    self.movementOpportunityTimer:setMultiplier(1)
+  end
+
+  
+  self.movementOpportunityTimer:update(dt)
+
+
+  if self.movementOpportunityTimer:isJammed() then
+    if self.state < 6 then
+      self.state = self.state + 1
       self.movementOpportunityTimer:set(0)
     end
   end
 
-  -- ?? Mecânica do tempo de espera nas cameras
-  if self.state == 1 then
-    if not self.attackTimer:getJammed()then
-      if not self.isCameraOn then
-        self.attackTimer:update(dt)
-        self.visible = false
-      else
-        if not self.watchTimer:getJammed() then
-          self.watchTimer:update(dt)
-        else
-          self.state = 0
-          self.camera = 0
-          self.movementOpportunityTimer:set(0)
-        end
-        self.visible = true
-      end
-    else
-      self.state = 2
-      self.camera = 0
-      self.visible = false
-    end
-  end
-
-
-  -- ?? Mecânica de kill
-  if self.state == 2 then
-    if not self.killTimer:getJammed() then
-      self.killTimer:update(dt)
-    else
+  if self.state == 6 then
+    self.killTimer:update()
+    if self.killTimer:isJammed() then
       self.killPlayer = true
     end
   end
-
+  
   return self.killPlayer
-
-
 end
 
 
 
 
-function Sock:draw(mode)
+function Sock:draw()
   if self.difficulty == 0 then
     return
   end
 
-  if self.visible == true and mode == 0 and self.isCameraOn and self.camera > 0 then
-    love.graphics.draw(self.frames.inCameras, self.x, self.y)
+  if self.isOnCamera and self.state ~= 7 and self.frames.inCameras[self.state] ~= nil then
   end
+  
 end
 
 

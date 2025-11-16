@@ -13,9 +13,7 @@ function Snake.new(x, y, difficulty)
 
   self.difficulty = difficulty                                               -- Dificuldade: um número de 0 a 20
 
-  -- TODO: balancear os valores dos timers
-  -- self.movementOpportunityTimer = Timer.new(20 - (difficulty/1.4))
-  self.movementOpportunityTimer = Timer.new(5)
+  self.movementOpportunityTimer = Timer.new(24 - (difficulty/2))
   self.killTimer   =              Timer.new(10)                              -- Tempo para esperar antes de realmente atacar o protagonista
 
   self.state = 1                                                             -- 1 - 2 = neutro; 3 - esperando; 4 - 6 = posições de ataque; 7 = killstate
@@ -80,7 +78,7 @@ function Snake:update(dt, playerCamera, isOn, lockedDuct)                       
   self.blocked = self.currentCamera[1] == lockedDuct[1] and self.currentCamera[2] == 1
 
   if self.state ~= 7 then
-    if not self.movementOpportunityTimer:getJammed() then
+    if not self.movementOpportunityTimer:isJammed() then
       self.movementOpportunityTimer:update(dt)
     else
       if self:isGonnaMove(1, 20) then
@@ -100,7 +98,7 @@ function Snake:update(dt, playerCamera, isOn, lockedDuct)                       
       self.movementOpportunityTimer:set(0)
     end
   else
-    if not self.killTimer:getJammed() then
+    if not self.killTimer:isJammed() then
       self.killTimer:update(dt)
     else
       self.killPlayer = true

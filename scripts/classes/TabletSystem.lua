@@ -9,6 +9,7 @@ TabletSystem.__index = TabletSystem
 
 
 
+
 function TabletSystem.new(screenW, screenH)
   local self = setmetatable({}, TabletSystem)
   self.screenW, self.screenH = screenW, screenH
@@ -51,9 +52,10 @@ function TabletSystem.new(screenW, screenH)
 
     Button.new(screenW - 120, 100, "uiButtonMode.png", function()
       self.mode = bit.bxor(self.mode, 1)
-    end),
+    end)
+  }
 
-    Button.new(screenW - 120, 180, "uiButtonLock.png", function()
+  self.uiButtonLock = Button.new(screenW - 120, 180, "uiButtonLock.png", function()
       if self.mode == 1 then
         if self.ductsActiveCamera ~= 1 then
           if self.lockedDuct[1] ~= self.ductsActiveCamera then
@@ -64,7 +66,6 @@ function TabletSystem.new(screenW, screenH)
         end
       end
     end)
-  }
 
   -- == Barra de Progresso ==
   self.cameraProgressBarWidth = self.buttons[1].image:getWidth()
@@ -80,6 +81,7 @@ function TabletSystem.new(screenW, screenH)
 
   return self
 end
+
 
 
 
@@ -109,12 +111,12 @@ function TabletSystem:update(dt, mouseX, mouseY, stateOfTablet)
 
   end
 
-  if self.mainCameraProgressInterval:getJammed() then
+  if self.mainCameraProgressInterval:isJammed() then
     self.mainCameraProgress = self.mainCameraProgress - 1
     self.mainCameraProgressInterval:set(0)
   end
 
-  if self.ductsCameraProgressInterval:getJammed() then
+  if self.ductsCameraProgressInterval:isJammed() then
     self.ductsCameraProgress = self.ductsCameraProgress - 1
     self.ductsCameraProgressInterval:set(0)
   end
@@ -134,7 +136,7 @@ function TabletSystem:update(dt, mouseX, mouseY, stateOfTablet)
     return
   end
 
-  if self.recordTimer:getJammed() then
+  if self.recordTimer:isJammed() then
     self.redCircleState = not self.redCircleState
     self.recordTimer:set(0)
   end
@@ -144,7 +146,16 @@ function TabletSystem:update(dt, mouseX, mouseY, stateOfTablet)
   for _, btn in ipairs(self.buttons) do
     btn:update(mouseX, mouseY, mousePressed)
   end
+  
+  self.uiButtonLock:update(mouseX, mouseY, mousePressed)
+
+  if self.mode == 1 and self.ductsActiveCamera ~= 1 then
+    self.uiButtonLock:makeAppear()
+  else
+    self.uiButtonLock:makeVanish()
+  end
 end
+
 
 
 
@@ -158,9 +169,11 @@ end
 
 
 
+
 function TabletSystem:getLockedDuct()
   return self.lockedDuct
 end
+
 
 
 
@@ -182,6 +195,8 @@ function TabletSystem:draw()
   for _, btn in ipairs(self.buttons) do
     btn:draw()
   end
+
+  self.uiButtonLock:draw()
   
   -- Indicador de gravação
   if self.redCircleState then

@@ -7,11 +7,12 @@ local TabletSystem  = require("scripts.classes.TabletSystem")
 local EyeEnemy      = require("scripts.classes.enemies.EyeEnemy")
 local Tablet        = require("scripts.classes.Tablet")
 local Snake         = require("scripts.classes.enemies.Snake")
+local Clock         = require("scripts.classes.Clock")
 
--- ESCALA E POSICIONAMENTO
+-- ESCALA E POSICIONAMENT
 local baseWidth, baseHeight = 800, 600
 local currentScale = 1
-local offsetX, offsetY = 0,0
+local offsetX, offsetY = 0, 0
 local hDivision = 6
 
 -- BACKGROUND
@@ -33,11 +34,11 @@ local generalTimer = Timer.new(nil)
 local mode = nil
 local playerCamera = nil
 local jeffKill
+local clock   = Clock.new(4, 576)
 
 -- INIMIGOS
-jeffWarzatski = EyeEnemy.new(0, 0, 10)
+jeffWarzatski = EyeEnemy.new(0, 0, 20)
 lenny         = Snake.new(0, 0, 20)
-
 
 
 
@@ -52,8 +53,8 @@ end
 function love.resize(w,h)
   local scaleX, scaleY = w/baseWidth, h/baseHeight
   currentScale = math.min(scaleX, scaleY)
-  offsetX = (w - baseWidth*currentScale)/2
-  offsetY = (h - baseHeight*currentScale)/2
+  offsetX = (w - baseWidth * currentScale)/2
+  offsetY = (h - baseHeight * currentScale)/2
 end
 
 
@@ -77,6 +78,7 @@ function love.update(dt)
     if Bck.x < baseWidth-imgW then Bck.x = baseWidth - imgW end
   end
 
+  clock:update(dt)
   painel:update(dt, mousePos[1], mousePos[2])
   sistemaTablet:update(dt, mousePos[1], mousePos[2], painel.isOn)
   jeffKill = jeffWarzatski:update(dt, {playerCamera, mode}, painel.isOn)
@@ -102,17 +104,9 @@ function love.draw()
   -- background
   love.graphics.draw(Bck.image, Bck.x, Bck.y)
 
-  -- Robôs do Escritório
-
-  -- Fim dos Robôs do Escritório
-
   sistemaTablet:draw()
-
-  -- Robôs das câmeras
   lenny:draw()
   jeffWarzatski:draw()
-  -- Fim dos robôs das câmeras
-
   painel:draw()
 
   love.graphics.setCanvas()
@@ -126,6 +120,7 @@ function love.draw()
   if showDebug then
     drawDebug()
   end
+  clock:draw()
 end
 
 

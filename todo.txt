@@ -1,12 +1,32 @@
-===PARA FAZER===
-- Câmera
-	- Implementar tablet.
-		* Animações (câmera 4:3)
-		* Posições
-		* Vetor de câmeras possíveis (inicialmente apenas dutos)
+### RASCUNHO DE PENSAMENTOS ###
+"10% de planejamento evita 90% de esforço"
+
+--- Mecânica da Meia ---
+* Meia começa na câmera 1 e vai evoluindo até chegar na câmera 5, que é a câmera antes de chegar até o jogador.
+* Ela obedece um intervalo, que é travado (?) sempre que ela é observada pelo jogador (Chester em FNAC But Better).
+(?) O intervalo bem que poderia aumentar ao olhar pra ela, né?
+* Intervalo grande em baixas dificuldades, menor em altas dificuldades.
+* RNG dela é quase nulo.
+* Contador do intervalo itera pela metade (2x mais tempo) caso haja interação do jogador com algum robô do escritório (robô deve iniciar a interação).
+-> Cada estágio indica o número da câmera que a Meia está.
+-> No estágio 6 ela entra na sala e espera X segundos para matar o jogador. Ela fica visível na sala o tempo todo.
+-> O estágio 6 é inevitável.
+-> Para dobrar o tempo relativo, divide-se o dt pela metade.
+(!) Pra isso funcionar do jeito que eu to pensando, talvez o sistema de câmeras precise mudar, né?
 
 
 
-=== HEURÍSTICA ===
-- Câmera
-	* Painel e botão estão na mesma classe.
+--- Mecânica do Urso(?) ---
+(?) Tava pensando se não era uma boa ser um balão, que voa por aí.
+    * Balão não é letal e nem é um robô.
+
+* Urso fica sentado na prateleira quando inativo (estágio 1).
+* Chega um ponto em que ele desaparece da prateleira e aparece na frente do jogador em uma posição aleatória.
+* Jogador precisa apontar o mouse (encontrar justificativa na lore)! para o olho do urso para que ele volte. Ele irá mudar de posição sempre que isso acontecer.
+(!) Pode ser que seja necessário um apontador laser para que ele volte ao normal.
+* Após X vezes (pensando se X depende da dificuldade), o urso volta para a prateleira.
+* Se demorar demais para acabar o ciclo, jumpscare.
+
+
+
+

@@ -7,7 +7,7 @@ Tablet.__index = Tablet
 
 
 
-function Tablet.new(screenX, screenY, scale)
+function Tablet.new(screenX, screenY)
   local self = setmetatable({}, Tablet)
   self.isOn = false
   self.tabletDim = {screenX, screenY}
@@ -71,7 +71,7 @@ function Tablet:update(dt, mouseX, mouseY)
 
   if self.isMoving then
     self.animTimer:update(dt)
-    if self.animTimer:getJammed() then
+    if self.animTimer:isJammed() then
       self.currentFrame = self.currentFrame + self.animation
       self.animTimer:reset()
       if self.currentFrame >= 6 then

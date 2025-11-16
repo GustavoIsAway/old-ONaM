@@ -15,6 +15,7 @@ function Button.new(x, y, imagePath, callback)
   self.callback = callback or function() end
   self.hovered = false
   self.pressed = false
+  self.vanished = false
 
   self.collision = CollBox.new(x, y, self.width, self.height)
   return self
@@ -41,15 +42,38 @@ end
 
 
 
+function Button:makeVanish()
+  self.collision:disable()
+  self.vanished = true
+end
+
+
+
+function Button:makeAppear()
+  self.collision:enable()
+  self.vanished = false
+end
+
+
+
+function Button:didVanish()
+  return self.vanished
+end
+
+
+
+
 function Button:draw()
-  if self.hovered then
-    love.graphics.setColor(0.8, 0.8, 0.8, 1)
-  else
+  if not self:didVanish() then
+    if self.hovered then
+      love.graphics.setColor(0.8, 0.8, 0.8, 1)
+    else
+      love.graphics.setColor(1, 1, 1, 1)
+    end
+  
+    love.graphics.draw(self.image, self.x, self.y)
     love.graphics.setColor(1, 1, 1, 1)
   end
-
-  love.graphics.draw(self.image, self.x, self.y)
-  love.graphics.setColor(1, 1, 1, 1)
 end
 
 
