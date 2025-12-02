@@ -9,7 +9,7 @@ function Clock.new(x, y)
   local self = setmetatable({}, Clock)
   self.time = Timer.new(60)
   self.count = 12
-  self.period = "AM"
+  self.period = "PM"
   self.x, self.y = x, y
   self.clockFont = love.graphics.newFont(22)
 
@@ -19,8 +19,8 @@ end
 function Clock:update(dt)
   self.time:update(dt)
   if self.time:isJammed() then
-    if self.count == 12 and self.period == "AM" then
-      self.period = "PM"
+    if self.count == 12 and self.period == "PM" then
+      self.period = "AM"
       self.count = 1
     else
       self.count = self.count + 1

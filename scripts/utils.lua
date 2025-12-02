@@ -14,8 +14,8 @@ end
 
 
 
-function utils.loadImage(imageName)
-  return love.graphics.newImage("assets/imgs/" .. imageName)
+function utils.loadImage(imagePath)
+  return love.graphics.newImage("assets/imgs/" .. imagePath)
 end
 
 

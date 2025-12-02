@@ -4,6 +4,7 @@ local Button = require("scripts.classes.Button")
 local utils = require("scripts.utils")
 local bit = require("bit")
 
+
 local TabletSystem = {}
 TabletSystem.__index = TabletSystem
 
@@ -18,7 +19,6 @@ function TabletSystem.new(screenW, screenH)
   self.redCircleState = true
   self.recordTimer = Timer.new(1)
   self.mode = 0                                  -- 0 -> Normal; 1 -> Dutos;
-  self.cameraProgressParts = 40
   self.stateOfTablet = false                     -- Diz se o tablet está ligado ou desligado
   self.lockedDuct = {0, 1}
 
@@ -26,7 +26,8 @@ function TabletSystem.new(screenW, screenH)
   self.mainCameraImages = {
     utils.loadImage("cameras/main1.png"),
     utils.loadImage("cameras/main2.png"),
-    utils.loadImage("cameras/main3.png")
+    utils.loadImage("cameras/main3.png"),
+    nil
   }
 
   self.ductsCameraImages = {
@@ -39,23 +40,27 @@ function TabletSystem.new(screenW, screenH)
   -- == Câmeras Ativas de Cada Modo ==
 
   -- == Botões ==
-  self.buttons = {
-    Button.new(screenW - 120, 40, "uiButtonNext.png", function()
-      if self.mode == 0 then
-        self.mainActiveCamera = (self.mainActiveCamera % #self.mainCameraImages) + 1
-        self.mainCameraProgress = self.cameraProgressParts
-      else
-        self.ductsActiveCamera = (self.ductsActiveCamera % #self.ductsCameraImages) + 1
-        self.ductsCameraProgress = self.cameraProgressParts
-      end
+  self.baseButtons = {
+    Button.new(screenW - 120, 40, "uiButton1.png", "CAM 1", function()
+      self.mainActiveCamera = 1
     end),
-
-    Button.new(screenW - 120, 100, "uiButtonMode.png", function()
+    Button.new(screenW - 210, 40, "uiButton2.png", "CAM 2", function()
+      self.mainActiveCamera = 2
+    end),
+    Button.new(screenW - 300, 40, "uiButton3.png", "CAM 3", function()
+      self.mainActiveCamera = 3
+    end),
+    Button.new(screenW - 390, 40, "uiButton4.png", "CAM 3", function()
+      self.mainActiveCamera = 4
+    end),
+    Button.new(screenW - 120, 140, "uiButtonMode.png", nil, function()
       self.mode = bit.bxor(self.mode, 1)
     end)
   }
 
-  self.uiButtonLock = Button.new(screenW - 120, 180, "uiButtonLock.png", function()
+  self.ventButtons = {}
+
+  self.uiButtonLock = Button.new(screenW - 120, 180, "uiButtonLock.png", nil, function()
       if self.mode == 1 then
         if self.ductsActiveCamera ~= 1 then
           if self.lockedDuct[1] ~= self.ductsActiveCamera then
@@ -68,16 +73,8 @@ function TabletSystem.new(screenW, screenH)
     end)
 
   -- == Barra de Progresso ==
-  self.cameraProgressBarWidth = self.buttons[1].image:getWidth()
-
   self.mainActiveCamera = 1
   self.ductsActiveCamera = 1
-
-  self.mainCameraProgressInterval = Timer.new(0.1)
-  self.mainCameraProgress = self.cameraProgressParts
-  
-  self.ductsCameraProgressInterval = Timer.new(0.1)
-  self.ductsCameraProgress = self.cameraProgressParts
 
   return self
 end
@@ -87,48 +84,16 @@ end
 
 function TabletSystem:update(dt, mouseX, mouseY, stateOfTablet)
   self.stateOfTablet = stateOfTablet
-  incrementParcel = dt * 1.6;
 
 
   self.recordTimer:update(dt)
 
   if self.stateOfTablet then
     if self.mode == 0 then
-      self.mainCameraProgressInterval:update(dt)
+      -- todo
     else
-      self.ductsCameraProgressInterval:update(dt)
+      -- todo
     end
-
-  else
-
-    if self.mainCameraProgress <= self.cameraProgressParts then
-      self.mainCameraProgress = self.mainCameraProgress + incrementParcel
-    end
-
-    if self.ductsCameraProgress <= self.cameraProgressParts then
-      self.ductsCameraProgress = self.ductsCameraProgress + incrementParcel
-    end
-
-  end
-
-  if self.mainCameraProgressInterval:isJammed() then
-    self.mainCameraProgress = self.mainCameraProgress - 1
-    self.mainCameraProgressInterval:set(0)
-  end
-
-  if self.ductsCameraProgressInterval:isJammed() then
-    self.ductsCameraProgress = self.ductsCameraProgress - 1
-    self.ductsCameraProgressInterval:set(0)
-  end
-
-  if self.mainCameraProgress <= 0 then
-    self.mainActiveCamera = (self.mainActiveCamera % #self.mainCameraImages) + 1
-    self.mainCameraProgress = self.cameraProgressParts
-  end
-
-  if self.ductsCameraProgress <= 0 then
-    self.ductsActiveCamera = (self.ductsActiveCamera % #self.ductsCameraImages) + 1
-    self.ductsCameraProgress = self.cameraProgressParts
   end
 
   if not stateOfTablet then
@@ -143,7 +108,7 @@ function TabletSystem:update(dt, mouseX, mouseY, stateOfTablet)
   
   local mousePressed = love.mouse.isDown(1)
 
-  for _, btn in ipairs(self.buttons) do
+  for _, btn in ipairs(self.baseButtons) do
     btn:update(mouseX, mouseY, mousePressed)
   end
   
@@ -189,14 +154,14 @@ function TabletSystem:draw()
     camImage = self.ductsCameraImages[self.ductsActiveCamera]
   end
 
-  love.graphics.draw(camImage, 0, 0)
-
-  -- Botões
-  for _, btn in ipairs(self.buttons) do
-    btn:draw()
+  if camImage ~= nil then
+    love.graphics.draw(camImage, 0, 0)
+  else
+    love.graphics.push("all")
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.rectangle("fill", 0, 0, 800, 600)
+    love.graphics.pop()
   end
-
-  self.uiButtonLock:draw()
   
   -- Indicador de gravação
   if self.redCircleState then
@@ -216,12 +181,19 @@ function TabletSystem:draw()
     1.2
   )
 
-  -- Barra de Progresso da Câmera (TODO)
-  if self.mode == 0 then
-    love.graphics.rectangle("fill", self.screenW - 120, 160, self.mainCameraProgress * (self.cameraProgressBarWidth / self.cameraProgressParts), 10)
-  else
-    love.graphics.rectangle("fill", self.screenW - 120, 160, self.ductsCameraProgress * (self.cameraProgressBarWidth / self.cameraProgressParts), 10)
+  -- Botões do solo
+  for _, btn in ipairs(self.baseButtons) do
+    btn:draw()
   end
+
+  -- Botões da ventilação
+  --[[
+  for _, btn in ipairs(self.ventbaseButtons) do
+    ventbaseButtons:draw()
+  end
+  ]]
+
+  self.uiButtonLock:draw()
 
 end
 

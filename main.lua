@@ -1,13 +1,15 @@
 math.randomseed(os.time())
-math.random(); math.random(); math.random()
+math.random(); math.random(); math.random() -- Saca 3 números do RNG pra "desviciar" um pouco os resultados
 
 local utils         = require("scripts.utils")
 local Timer         = require("scripts.classes.Timer")
 local TabletSystem  = require("scripts.classes.TabletSystem")
-local EyeEnemy      = require("scripts.classes.enemies.EyeEnemy")
 local Tablet        = require("scripts.classes.Tablet")
-local Snake         = require("scripts.classes.enemies.Snake")
 local Clock         = require("scripts.classes.Clock")
+local Sock          = require("scripts.classes.enemies.Sock")
+local Bear          = require("scripts.classes.enemies.Bear")
+local Snake         = require("scripts.classes.enemies.Snake")
+local EyeEnemy      = require("scripts.classes.enemies.EyeEnemy")
 
 -- ESCALA E POSICIONAMENT
 local baseWidth, baseHeight = 800, 600
@@ -29,16 +31,19 @@ local mousePos = {}
 local renderCanvas
 
 -- DEBUG
-local showDebug = true
+local jeffKill, meiaKill, lennyKill
+local bearKillOrStall = {}
+local showDebug    = true
 local generalTimer = Timer.new(nil)
-local mode = nil
+local mode         = nil
 local playerCamera = nil
-local jeffKill
-local clock   = Clock.new(4, 576)
+local clock        = Clock.new(4, 576)
 
 -- INIMIGOS
-jeffWarzatski = EyeEnemy.new(0, 0, 20)
-lenny         = Snake.new(0, 0, 20)
+jeffWarzatski      = EyeEnemy.new(0, 0, 12)
+lenny              = Snake.new(0, 0, 12)
+meia               = Sock.new(0, 0, 12)
+urso               = Bear.new(0, 0, 12)
 
 
 
@@ -50,7 +55,7 @@ end
 
 
 
-function love.resize(w,h)
+function love.resize(w, h)
   local scaleX, scaleY = w/baseWidth, h/baseHeight
   currentScale = math.min(scaleX, scaleY)
   offsetX = (w - baseWidth * currentScale)/2
@@ -81,8 +86,10 @@ function love.update(dt)
   clock:update(dt)
   painel:update(dt, mousePos[1], mousePos[2])
   sistemaTablet:update(dt, mousePos[1], mousePos[2], painel.isOn)
-  jeffKill = jeffWarzatski:update(dt, {playerCamera, mode}, painel.isOn)
-  lennyKill = lenny:update(dt, {playerCamera, mode}, painel.isOn, sistemaTablet:getLockedDuct())
+  jeffKill = jeffWarzatski:update(dt, {playerCamera, mode}, painel.isOn, bearKillOrStall[2])
+  lennyKill = lenny:update(dt, {playerCamera, mode}, painel.isOn, sistemaTablet:getLockedDuct(), bearKillOrStall[2])
+  meiaKill = meia:update(dt, {playerCamera, mode}, painel.isOn, bearKillOrStall[2])
+  bearKillOrStall = urso:update(dt, mousePos, painel.isOn)
 end
 
 
@@ -99,15 +106,18 @@ end
 
 function love.draw()
   love.graphics.setCanvas(renderCanvas)
-  love.graphics.clear(0,0,0,1)
+  love.graphics.clear(0, 0, 0, 1)
 
   -- background
   love.graphics.draw(Bck.image, Bck.x, Bck.y)
 
+  urso:draw()
   sistemaTablet:draw()
   lenny:draw()
   jeffWarzatski:draw()
+  meia:draw()
   painel:draw()
+  clock:draw()
 
   love.graphics.setCanvas()
   love.graphics.push()
@@ -120,7 +130,6 @@ function love.draw()
   if showDebug then
     drawDebug()
   end
-  clock:draw()
 end
 
 
@@ -150,4 +159,5 @@ function drawDebug()
   dbg("Q: alterna debug info")
   dbg("Current Camera/Mode: " .. cameraGets[1] .. ", " ..cameraGets[2])
   dbg("Duto trancado: " .. sistemaTablet:getLockedDuct()[1] .. ", " .. sistemaTablet:getLockedDuct()[2])
+  dbg("Meia Timer: " .. string.format("%.2f", meia.movementOpportunityTimer:get()))
 end

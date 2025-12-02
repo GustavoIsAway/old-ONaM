@@ -74,6 +74,7 @@ function CollBox:draw(alpha)		-- >color< Recebe tabela
 	 	self.color[3], 
 	  alpha or 0.5
 	)
+
 	love.graphics.rectangle(
 		"fill", 
 	  self.x, 
@@ -84,6 +85,7 @@ function CollBox:draw(alpha)		-- >color< Recebe tabela
 		nil, 
 		0
 	)
+	
 	love.graphics.pop()
 end
 

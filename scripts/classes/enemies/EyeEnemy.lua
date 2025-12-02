@@ -15,9 +15,9 @@ function EyeEnemy.new(x, y, difficulty)
 
   -- TODO: balancear os valores dos timers
   self.movementOpportunityTimer = Timer.new(8)
-  self.attackTimer =              Timer.new(12 - (difficulty/4))     -- Tempo para permanecer no estado de ataque, antes de entrar no kill state
-  self.killTimer   =              Timer.new(5)                       -- Tempo para esperar antes de realmente atacar o protagonista
-  self.watchTimer  =              Timer.new(2 + (difficulty/12))
+  self.attackTimer =              Timer.new(13 - (difficulty/5))     -- Tempo para permanecer no estado de ataque, antes de entrar no kill state
+  self.killTimer   =              Timer.new(05)                       -- Tempo para esperar antes de realmente atacar o protagonista
+  self.watchTimer  =              Timer.new(1.4 + (difficulty/12))
 
   self.state = 0                            -- 0 = inativo; 1 = nas câmeras; 2 = killstate
   self.camera = 0                           -- Camera 0 inicialmente, que não existe
@@ -45,17 +45,17 @@ function EyeEnemy:isGonnaMove(min, max)               -- Retorna verdade sempre 
 
   if sorted <= self.difficulty then
     return true
-  else
-    return false
   end
+  
+  return false
 
 end
 
 
 
 
-function EyeEnemy:update(dt, playerCamera, isOn)
-  if self.difficulty == 0 then return end
+function EyeEnemy:update(dt, playerCamera, isOn, bearStalling)
+  if self.difficulty == 0 or bearStalling then return false end
 
   self.isOnCamera = (playerCamera[1] == self.camera) and isOn
   self.currentCamera = playerCamera
@@ -139,7 +139,7 @@ function EyeEnemy:draw()
   end
 
   self.drawCurrentSprite()
-  
+
 end
 
 
