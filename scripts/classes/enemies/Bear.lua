@@ -59,7 +59,7 @@ end
 
 
 
-function Bear:update(dt, mousePos, isOn)                    -- Retorna uma tupla {self.killPlayer, self.stall}
+function Bear:update(dt, mousePos, mouseInputState, isOn)                    -- Retorna uma tupla {self.killPlayer, self.stall}
   if self.difficulty == 0 then return {nil, nil} end
 
   self.isLookingAtOffice = not isOn

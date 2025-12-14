@@ -54,6 +54,7 @@ function Timer:get()
 end
 
 
+
 -- O timer atualiza se ele estiver num intervalo válido (contador < tempoMáximo),
 -- se ele não estiver travado (contador == tempoMáximo) ou se ele não estiver pausado.
 -- Um mero set(0) reinicia o timer a todo vapor.

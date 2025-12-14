@@ -38,9 +38,4 @@ function CameraButton:update(mouseX, mouseY)
 end
 
 
-function CameraButton:returnSelectedCamera()
-
-end
-
-
 return CameraButton

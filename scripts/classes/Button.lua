@@ -1,11 +1,12 @@
 local CollBox = require("scripts.classes.CollisionBox")
+local CollCircle = require("scripts.classes.CollisionCircle")
 local utils = require("scripts.utils")
 
 local Button = {}
 Button.__index = Button
 
 
-function Button.new(x, y, imagePath, text, callback)
+function Button.new(x, y, imagePath, text, collisionType, callback)
   local self = setmetatable({}, Button)
   
   self.x, self.y = x, y
@@ -21,20 +22,27 @@ function Button.new(x, y, imagePath, text, callback)
   self.image = nil
   if type(imagePath) ~= "nil" then
     self.image = utils.loadImage(imagePath)
-    self.width, self.height = self.image:getWidth(), self.image:getHeight()
   end
 
   self.callback = callback or function() end
   self.hovered  = false
   self.pressed  = false
   self.vanished = false
+  self.collisionType = collisionType
 
   self.dragging = false
   self.dragOffsetX = 0
   self.dragOffsetY = 0
   self.activatePrintPos = true
+  self.width, self.height = self.image:getWidth(), self.image:getHeight()
 
-  self.collision = CollBox.new(x, y, self.width, self.height)
+  if self.collisionType == "circle" then         -- Supõe imagem quadrada
+    self.radius = self.image:getWidth() / 2
+    self.collision = CollCircle.new(self.x + (self.image:getWidth() / 2), self.y + (self.image:getHeight() / 2), self.radius)
+  elseif self.collisionType == "rect" then
+    self.collision = CollBox.new(self.x, self.y, self.width, self.height)
+  end
+
   return self
 end
 
@@ -60,6 +68,11 @@ function Button:dragWithRightMouse(mouseX, mouseY)
       self.x = mouseX - self.dragOffsetX
       self.y = mouseY - self.dragOffsetY
       self.collision:setPos(self.x, self.y)
+      if self.collisionType == "circle" then         -- Supõe imagem quadrada
+        self.collision = CollCircle.new(self.x + (self.image:getWidth() / 2), self.y + (self.image:getHeight() / 2), self.radius)
+      else
+        self.collision = CollBox.new(self.x, self.y, self.width, self.height)
+      end
     else
       self.dragging = false
     end
@@ -70,7 +83,7 @@ end
 
 
 
-function Button:update(mouseX, mouseY, mousePressed)
+function Button:update(mouseX, mouseY, mousePressed)            -- Retorna se foi pressionado
   local isHover = self.collision:checkMouseColl(mouseX, mouseY)
   
   if isHover and not self.hovered then
@@ -87,7 +100,6 @@ function Button:update(mouseX, mouseY, mousePressed)
   end
 
   self:dragWithRightMouse(mouseX, mouseY)
-
 end
 
 
@@ -108,6 +120,18 @@ end
 
 function Button:didVanish()
   return self.vanished
+end
+
+
+
+function Button:setPos(x, y)
+  self.x = x
+  self.y = y
+  if self.collisionType == "circle" then
+    self.collision:setPos(x + (self.width / 2), y + (self.height / 2))
+  elseif self.collisionType == "rect" then
+    self.collision:setPos(x, y)
+  end
 end
 
 
