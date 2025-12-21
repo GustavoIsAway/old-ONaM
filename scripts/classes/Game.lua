@@ -8,9 +8,12 @@ local Bear          = require("scripts.classes.enemies.Bear")
 local Snake         = require("scripts.classes.enemies.Snake")
 local EyeEnemy      = require("scripts.classes.enemies.EyeEnemy")
 local Frog          = require("scripts.classes.enemies.Frog")
+local Button        = require("scripts.classes.Button")
+
 
 local Game = {}
 Game.__index = Game
+
 
 function Game.new()
   local self = setmetatable({}, Game)
@@ -30,6 +33,8 @@ function Game.new()
   -- TELA
   self.painel = Tablet.new(self.baseWidth, self.baseHeight)
   self.sistemaTablet = TabletSystem.new(self.baseWidth, self.baseHeight)
+  self.randomButton = Button.new(368, 277, {125, 125}, "Oi mae", "rect", nil)
+  self.randomButton:setColor(utils.colors.CL_SOFT_GREEN)
 
   -- INPUT
   self.mousePos = {}
@@ -58,6 +63,9 @@ function Game.new()
 
   return self
 end
+
+
+
 
 function Game:update(dt, mouseIsDown, mouseClick, mousePos)
   -- INTERNALIZA INPUT
@@ -133,7 +141,12 @@ function Game:update(dt, mouseIsDown, mouseClick, mousePos)
       self.mousePos,
       self.mouseClick
     )
+
+  self.randomButton:update(mousePos[1], mousePos[2], mouseClick[1])
 end
+
+
+
 
 function Game:drawDebug()
   love.graphics.setColor(1,1,1,1)
@@ -171,7 +184,7 @@ end
 function Game:draw()
   -- BACKGROUND
   love.graphics.draw(self.Bck.image, self.Bck.x, self.Bck.y)
-
+  
   self.urso:draw()
   self.markoth:draw()
   self.sistemaTablet:drawBottom()
@@ -181,6 +194,7 @@ function Game:draw()
   self.sistemaTablet:drawTop()
   self.painel:draw()
   self.clock:draw()
+  self.randomButton:draw()
 
   if self.showDebug then
     self:drawDebug()

@@ -74,7 +74,6 @@ end
 
 
 
-
 local Frog = {}
 Frog.__index = Frog
 
@@ -104,8 +103,6 @@ function Frog.new(difficulty)
     acc           = 1600
   }
 
-  self.panelButtons = {}
-
   -- Controle de movimento
   self.counter   = 5
   self.canGoUp   = true
@@ -119,7 +116,7 @@ end
 
 function Frog:goingUp(dt)
   local frogDone  = smoothMove(dt, self, self.x, 300)
-  local panelDone = smoothMove(dt, self.panel, self.panel.x, 300)
+  local panelDone = smoothMove(dt, self.panel, self.panel.x, 260)
 
   if frogDone and panelDone and self.currentFrame == 1 and self.state == 0 then
     self.state = 1
