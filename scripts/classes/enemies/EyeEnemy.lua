@@ -14,8 +14,8 @@ function EyeEnemy.new(x, y, difficulty)
   self.difficulty = difficulty              -- Dificuldade: um número de 0 a 20
 
   -- TODO: balancear os valores dos timers
-  self.movementOpportunityTimer = Timer.new(8)
-  self.attackTimer =              Timer.new(13 - (difficulty/5))     -- Tempo para permanecer no estado de ataque, antes de entrar no kill state
+  self.movementOpportunityTimer = Timer.new(12)
+  self.attackTimer =              Timer.new(14 - (difficulty/5))     -- Tempo para permanecer no estado de ataque, antes de entrar no kill state
   self.killTimer   =              Timer.new(05)                       -- Tempo para esperar antes de realmente atacar o protagonista
   self.watchTimer  =              Timer.new(1.4 + (difficulty/12))
 

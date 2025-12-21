@@ -1,0 +1,2 @@
+- Personagem da janela com simon says tocando. -> Markoth
+- Personagem da porta que fica enconstado o tempo todo. Apagar a luz quando aparecer

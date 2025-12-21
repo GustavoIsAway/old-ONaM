@@ -1,4 +1,3 @@
-local CollBox = require("scripts.classes.CollisionBox")
 local Timer = require("scripts.classes.Timer")
 local Button = require("scripts.classes.Button")
 local utils = require("scripts.utils")
@@ -54,7 +53,6 @@ function TabletSystem.new(screenW, screenH)
   }
   
   -- == Câmeras Ativas de Cada Modo ==
-
   -- == Botões ==
   self.baseButtons = {
     Button.new(self.buttonsFloorPositions[1][1], self.buttonsFloorPositions[1][2], "uiButton1.png", "CAM 1", "circle", function()
@@ -243,7 +241,7 @@ function TabletSystem:drawTop()
   )
 
   if self.mode == 1 then
-    love.graphics.draw(         -- Mapa da ventilação
+    love.graphics.draw(        -- Mapa da ventilação
       self.ventsMap,
       self.screenW - (self.floorMap:getWidth() + self.mapGap),
       self.screenH - (self.floorMap:getHeight() + self.mapGap),

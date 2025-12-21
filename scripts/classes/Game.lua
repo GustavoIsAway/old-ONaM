@@ -7,6 +7,7 @@ local Sock          = require("scripts.classes.enemies.Sock")
 local Bear          = require("scripts.classes.enemies.Bear")
 local Snake         = require("scripts.classes.enemies.Snake")
 local EyeEnemy      = require("scripts.classes.enemies.EyeEnemy")
+local Frog          = require("scripts.classes.enemies.Frog")
 
 local Game = {}
 Game.__index = Game
@@ -49,10 +50,11 @@ function Game.new()
   self.clock        = Clock.new(4, 576)
 
   -- INIMIGOS
-  self.jeffWarzatski = EyeEnemy.new(0, 0, 12)
-  self.lenny        = Snake.new(0, 0, 12)
-  self.meia         = Sock.new(0, 0, 12)
-  self.urso         = Bear.new(0, 0, 12)
+  self.jeffWarzatski = EyeEnemy.new(0, 0, 20)
+  self.lenny        = Snake.new(0, 0, 20)
+  self.meia         = Sock.new(0, 0, 20)
+  self.urso         = Bear.new(0, 0, 20)
+  self.markoth      = Frog.new(20)
 
   return self
 end
@@ -124,6 +126,13 @@ function Game:update(dt, mouseIsDown, mouseClick, mousePos)
       self.mouseClick,
       self.painel.isOn
     )
+
+  self.markothKill = 
+    self.markoth:update(
+      dt,
+      self.mousePos,
+      self.mouseClick
+    )
 end
 
 function Game:drawDebug()
@@ -164,6 +173,7 @@ function Game:draw()
   love.graphics.draw(self.Bck.image, self.Bck.x, self.Bck.y)
 
   self.urso:draw()
+  self.markoth:draw()
   self.sistemaTablet:drawBottom()
   self.lenny:draw()
   self.meia:draw()

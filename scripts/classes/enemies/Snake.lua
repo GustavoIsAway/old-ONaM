@@ -13,7 +13,7 @@ function Snake.new(x, y, difficulty)
 
   self.difficulty = difficulty                                               -- Dificuldade: um número de 0 a 20
 
-  self.movementOpportunityTimer = Timer.new(18 - (difficulty/2))
+  self.movementOpportunityTimer = Timer.new(24 - (difficulty/2))
   self.killTimer   =              Timer.new(16 - (difficulty/5))             -- Tempo para esperar antes de realmente atacar o protagonista
 
   self.state = 1                                                             -- 1 - 2 = neutro; 3 - esperando; 4 - 6 = posições de ataque; 7 = killstate
