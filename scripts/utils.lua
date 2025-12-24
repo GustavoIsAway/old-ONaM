@@ -77,4 +77,14 @@ end
 
 
 
+--[[
+Modo pode ser "static" (para sons carregados inteiramente na memória)
+ou "stream", que são carregados à medida que tocam (ideal para músicas)
+]]
+function utils.loadSound(soundPath, mode)
+  return love.audio.newSource("assets/sfx/" .. soundPath, mode)
+end
+
+
+
 return utils

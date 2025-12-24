@@ -19,18 +19,18 @@ function Button.new(x, y, shapeInfo, text, collisionType, callback)
   self.image = nil
   self.alphaValue = 1
 
-  
+
   self.callback = callback or function() end
   self.hovered  = false
   self.pressed  = false
   self.vanished = false
   self.collisionType = collisionType
-  
+
   self.dragging = false
   self.dragOffsetX = 0
   self.dragOffsetY = 0
-  self.activatePrintPos = true
-  
+  self.activatePrintPos = false
+
   if type(shapeInfo) == "string" then
     self.image = utils.loadImage(shapeInfo)
     self.width, self.height = self.image:getWidth(), self.image:getHeight()
@@ -57,7 +57,7 @@ function Button.new(x, y, shapeInfo, text, collisionType, callback)
     end
 
   end
-  
+
   if type(text) == "string" then
     self.text = text
   elseif type(text) == "number" then
@@ -73,7 +73,6 @@ end
 
 
 function Button:dragWithRightMouse(mouseX, mouseY)
-  if self.vanished then return end
 
   local rightDown = love.mouse.isDown(2)
 
@@ -112,6 +111,8 @@ end
 
 
 function Button:update(mouseX, mouseY, mousePressed)            -- Retorna se foi pressionado
+  if self:didVanish() then return end
+  
   local isHover = self.collision:checkMouseColl(mouseX, mouseY)
   
   if isHover and not self.hovered then

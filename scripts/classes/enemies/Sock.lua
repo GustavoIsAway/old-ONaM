@@ -14,7 +14,7 @@ function Sock.new(x, y, difficulty)
   self.difficulty = difficulty                                    -- Dificuldade: um número de 0 a 20
 
   -- TODO: balancear os valores dos timers
-  self.movementOpportunityTimer = Timer.new(math.floor(50 - (difficulty/2)))
+  self.movementOpportunityTimer = Timer.new(math.floor(75 - (difficulty/1.4)))
   self.killTimer                = Timer.new(10)                   -- Tempo para esperar antes de realmente atacar o protagonista
 
   self.state = 1                                                  -- 1 - Esperando; 2 - Ativo (fora da primeira câmera); 3-5 Na sala; 6 - Killstate; 
