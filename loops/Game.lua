@@ -1,5 +1,5 @@
-local utils         = require("scripts.utils")
-local Timer         = require("scripts.classes.Timer")
+local utils         = require("engine.utils")
+local Timer         = require("engine.Timer")
 local TabletSystem  = require("scripts.classes.TabletSystem")
 local Tablet        = require("scripts.classes.Tablet")
 local Clock         = require("scripts.classes.Clock")
@@ -8,7 +8,7 @@ local Bear          = require("scripts.classes.enemies.Bear")
 local Snake         = require("scripts.classes.enemies.Snake")
 local EyeEnemy      = require("scripts.classes.enemies.EyeEnemy")
 local Frog          = require("scripts.classes.enemies.Frog")
-local Button        = require("scripts.classes.Button")
+local Button        = require("engine.Button")
 
 
 local Game = {}

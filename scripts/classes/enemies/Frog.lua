@@ -1,6 +1,6 @@
-local Timer  = require("scripts.classes.Timer")
-local utils  = require("scripts.utils")
-local Button = require("scripts.classes.Button")
+local Timer  = require("engine.Timer")
+local utils  = require("engine.utils")
+local Button = require("engine.Button")
 
 -- Deus me perdoe: o GPT escreveu metade do que tá aqui.
 
@@ -140,32 +140,43 @@ function Frog.new(difficulty)
   self.sndGeniusFail   = utils.loadSound("frog/geniusFail.ogg", "static")
   self.sndGeniusWin    = utils.loadSound("frog/geniusWin.ogg", "static")
 
+  
   self.sndButtons = {
     utils.loadSound("frog/b1.ogg", "static"),
     utils.loadSound("frog/b2.ogg", "static"),
     utils.loadSound("frog/b3.ogg", "static"),
     utils.loadSound("frog/b4.ogg", "static")
   }
-
+  
   -- Buttons com CALLBACKS
+  self.currentFlashSound = nil
+
   self.buttons = {
     Button.new(370, 280, {125, 125}, "1", "rect", function()
-      love.audio.play(self.sndButtons[1]:clone())
+      if self.currentFlashSound and self.currentFlashSound:isPlaying() then love.audio.stop(self.currentFlashSound) end
+      self.currentFlashSound = self.sndButtons[1]:clone()
+      love.audio.play(self.currentFlashSound)
       self:onGeniusInput(1)
     end),
 
     Button.new(505, 280, {125, 125}, "2", "rect", function()
-      love.audio.play(self.sndButtons[2]:clone())
+      if self.currentFlashSound and self.currentFlashSound:isPlaying() then love.audio.stop(self.currentFlashSound) end
+      self.currentFlashSound = self.sndButtons[2]:clone()
+      love.audio.play(self.currentFlashSound)
       self:onGeniusInput(2)
     end),
 
     Button.new(505, 415, {125, 125}, "3", "rect", function()
-      love.audio.play(self.sndButtons[3]:clone())
+      if self.currentFlashSound and self.currentFlashSound:isPlaying() then love.audio.stop(self.currentFlashSound) end
+      self.currentFlashSound = self.sndButtons[3]:clone()
+      love.audio.play(self.currentFlashSound)
       self:onGeniusInput(3)
     end),
 
     Button.new(370, 415, {125, 125}, "4", "rect", function()
-      love.audio.play(self.sndButtons[4]:clone())
+      if self.currentFlashSound and self.currentFlashSound:isPlaying() then love.audio.stop(self.currentFlashSound) end
+      self.currentFlashSound = self.sndButtons[4]:clone()
+      love.audio.play(self.currentFlashSound)
       self:onGeniusInput(4)
     end)
   }

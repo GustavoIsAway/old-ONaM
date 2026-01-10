@@ -1,6 +1,6 @@
-local CollBox = require("scripts.classes.CollisionBox")
-local CollCircle = require("scripts.classes.CollisionCircle")
-local utils = require("scripts.utils")
+local CollBox = require("engine.CollisionBox")
+local CollCircle = require("engine.CollisionCircle")
+local utils = require("engine.utils")
 
 
 local Button = {}
@@ -128,7 +128,6 @@ function Button:update(mouseX, mouseY, mousePressed)            -- Retorna se fo
     self.pressed = false
   end
 
-  self:dragWithRightMouse(mouseX, mouseY)
 end
 
 

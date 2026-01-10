@@ -1,6 +1,6 @@
-local Timer = require("scripts.classes.Timer")
-local Button = require("scripts.classes.Button")
-local utils = require("scripts.utils")
+local Timer = require("engine.Timer")
+local Button = require("engine.Button")
+local utils = require("engine.utils")
 local bit = require("bit")
 
 

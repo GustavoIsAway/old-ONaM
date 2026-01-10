@@ -1,6 +1,6 @@
-Timer   = require("scripts.classes.Timer")
-utils   = require("scripts.utils")
-CollBox = require("scripts.classes.CollisionBox")
+Timer   = require("engine.Timer")
+utils   = require("engine.utils")
+CollBox = require("engine.CollisionBox")
 
 
 local CameraButton = {}

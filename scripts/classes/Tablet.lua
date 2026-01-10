@@ -1,6 +1,6 @@
-local utils = require("scripts.utils")
-local CollBox = require("scripts.classes.CollisionBox")
-local Timer = require("scripts.classes.Timer")
+local utils = require("engine.utils")
+local CollBox = require("engine.CollisionBox")
+local Timer = require("engine.Timer")
 
 local Tablet = {}
 Tablet.__index = Tablet

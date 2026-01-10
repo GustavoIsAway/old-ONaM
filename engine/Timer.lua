@@ -3,7 +3,7 @@ Timer.__index = Timer
 
 function Timer.new(timeLimit)
   local self = setmetatable({}, Timer)
-  
+
   self.maxTime = timeLimit
   self.count = 0
   self.jammed = false
@@ -57,8 +57,9 @@ end
 
 -- O timer atualiza se ele estiver num intervalo válido (contador < tempoMáximo),
 -- se ele não estiver travado (contador == tempoMáximo) ou se ele não estiver pausado.
--- Um mero set(0) reinicia o timer a todo vapor.
-function Timer:update(dt)
+-- Um mero set(0) reinicia o timer a todo vapor a não ser que ele esteja pausado.
+function Timer:update()
+  local dt = love.timer.getDelta()
   if not self.isPaused and not self.jammed and self.valid then
     if dt ~= nil then
       self.count = self.count + (dt * self.timeMultiplier)

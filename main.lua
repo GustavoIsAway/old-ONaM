@@ -1,7 +1,7 @@
 math.randomseed(os.time())
 math.random(); math.random(); math.random()
 
-local Game = require("scripts.classes.Game")
+local Game = require("loops.Game")
 
 -- BASE
 local baseWidth, baseHeight = 800, 600
@@ -19,7 +19,21 @@ local mouseIsDown = {false, false, false}
 local mouseWasDown = {false, false, false}
 local mouseClick = {false, false, false}
 
+
+-- 0 = menu; 1 = Game; 2 = Tela de Game Over
+local modes = {
+  MODE_MAIN_MENU = 1,
+  MODE_GAME = 2,
+  MODE_GAME_OVER = 3
+}
+
+local gameMode = modes.MODE_GAME
+
+
+
 love.graphics.setDefaultFilter("nearest","nearest")
+
+
 
 function love.resize(w, h)
   local scaleX, scaleY = w / baseWidth, h / baseHeight
@@ -31,6 +45,8 @@ function love.resize(w, h)
   game.offsetX = offsetX
   game.offsetY = offsetY
 end
+
+
 
 function love.update(dt)
   -- UPDATE DO MOUSE
@@ -50,7 +66,16 @@ function love.update(dt)
   mouseWasDown[1], mouseWasDown[2], mouseWasDown[3] =
     mouseIsDown[1], mouseIsDown[2], mouseIsDown[3]
 
-  game:update(dt, mouseIsDown, mouseClick, mousePos)
+  if gameMode == modes.MODE_MAIN_MENU then
+    -- todo
+  elseif gameMode == modes.MODE_GAME then
+    game:update(dt, mouseIsDown, mouseClick, mousePos)
+  elseif gameMode == modes.MODE_GAME_OVER then
+    -- todo
+  else
+    error("ERR: modo de jogo não existe.")
+  end
+  
 end
 
 function love.keypressed(key)
@@ -63,7 +88,15 @@ function love.draw()
   love.graphics.setCanvas(renderCanvas)
   love.graphics.clear(0, 0, 0, 1)
 
-  game:draw()
+  if gameMode == modes.MODE_MAIN_MENU then
+    -- todo
+  elseif gameMode == modes.MODE_GAME then
+    game:draw()
+  elseif gameMode == modes.MODE_GAME_OVER then
+    -- todo
+  else
+    error("ERR: modo de jogo não existe")
+  end
 
   love.graphics.setCanvas()
   love.graphics.push()

@@ -1,5 +1,5 @@
-local Timer = require("scripts.classes.Timer")
-local utils = require("scripts.utils")
+local Timer = require("engine.Timer")
+local utils = require("engine.utils")
 
 local EyeEnemy = {}
 EyeEnemy.__index = EyeEnemy
