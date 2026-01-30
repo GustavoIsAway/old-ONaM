@@ -35,6 +35,7 @@ love.graphics.setDefaultFilter("nearest","nearest")
 
 
 
+
 function love.resize(w, h)
   local scaleX, scaleY = w / baseWidth, h / baseHeight
   currentScale = math.min(scaleX, scaleY)
@@ -45,6 +46,7 @@ function love.resize(w, h)
   game.offsetX = offsetX
   game.offsetY = offsetY
 end
+
 
 
 
@@ -78,11 +80,17 @@ function love.update(dt)
   
 end
 
+
+
+
 function love.keypressed(key)
   if key == "q" then
     game.showDebug = not game.showDebug
   end
 end
+
+
+
 
 function love.draw()
   love.graphics.setCanvas(renderCanvas)
