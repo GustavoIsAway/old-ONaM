@@ -1,1 +1,1 @@
-# One Night at Meia's - Definitive Edition
+# One Night at Meia's (deprecated)
